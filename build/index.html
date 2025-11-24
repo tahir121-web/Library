@@ -1,63 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LIBRARY_ARCHIVE - TahirDevs Speed-Search</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-  <style>
-    body {
-      background-color: #001E2B;
-      color: white;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    .cyber-decorator {
-      position: absolute;
-      top: 0;
-      right: 0;
-      height: 100%;
-      width: 4px;
-      background: #00ED64;
-      opacity: 0.5;
-      transition: opacity 0.3s ease;
-    }
-    
-    .group:focus-within .cyber-decorator,
-    .group:hover .cyber-decorator {
-      opacity: 1;
-    }
-    
-    .book-card {
-      transition: all 0.3s ease;
-    }
-    
-    .book-card:hover {
-      transform: translateY(-5px);
-      background: #0b2a3a !important;
-    }
-    
-    .animate-spin {
-      animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-  </style>
-</head>
-<body>
-  <div id="root"></div>
-
-  <script type="text/babel">
-    const { useState, useEffect, useMemo } = React;
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LIBRARY_ARCHIVE - TahirDevs Speed-Search</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><script src="https://cdn.tailwindcss.com"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script><script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script><script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script><script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script><style>body{background-color:#001e2b;color:#fff;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}.cyber-decorator{position:absolute;top:0;right:0;height:100%;width:4px;background:#00ed64;opacity:.5;transition:opacity .3s ease}.group:focus-within .cyber-decorator,.group:hover .cyber-decorator{opacity:1}.book-card{transition:all .3s ease}.book-card:hover{transform:translateY(-5px);background:#0b2a3a!important}.animate-spin{animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}</style><script defer="defer" src="/Library/static/js/main.e30feac9.js"></script><link href="/Library/static/css/main.86aa9bf7.css" rel="stylesheet"></head><body><div id="root"></div><script type="text/babel">const { useState, useEffect, useMemo } = React;
     
     const BookSearch = () => {
       const [books, setBooks] = useState([]);
@@ -71,7 +12,7 @@
         const loadBooks = async () => {
           try {
             setLoading(true);
-            const response = await fetch('books.json');
+            const response = await fetch('./books.json');
             if (!response.ok) throw new Error('Failed to load books data');
             const data = await response.json();
             setBooks(data);
@@ -216,7 +157,4 @@
 
     // Render the app
     const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<BookSearch />);
-  </script>
-</body>
-</html>
+    root.render(<BookSearch />);</script></body></html>
