@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LIBRARY_ARCHIVE - TahirDevs Speed-Search</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <style>
+    body {
+      background-color: #001E2B;
+      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .cyber-decorator {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      width: 4px;
+      background: #00ED64;
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+    }
+    
+    .group:focus-within .cyber-decorator,
+    .group:hover .cyber-decorator {
+      opacity: 1;
+    }
+    
+    .book-card {
+      transition: all 0.3s ease;
+    }
+    
+    .book-card:hover {
+      transform: translateY(-5px);
+      background: #0b2a3a !important;
+    }
+    
+    .animate-spin {
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+    
+    const BookSearch = () => {
+      const [books, setBooks] = useState([]);
+      const [query, setQuery] = useState('');
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
+      const [fuse, setFuse] = useState(null);
+
+      // Load books data
+      useEffect(() => {
+        const loadBooks = async () => {
+          try {
+            setLoading(true);
+            const response = await fetch('books.json');
+            if (!response.ok) throw new Error('Failed to load books data');
+            const data = await response.json();
+            setBooks(data);
+            
+            // Initialize Fuse.js
+            const fuseInstance = new Fuse(data, {
+              keys: ['title', 'author', 'subject', 'type'],
+              threshold: 0.3,
+              includeScore: true,
+            });
+            setFuse(fuseInstance);
+          } catch (err) {
+            setError(err.message);
+            console.error('Error loading books:', err);
+          } finally {
+            setLoading(false);
+          }
+        };
+
+        loadBooks();
+      }, []);
+
+      // Perform search
+      const results = useMemo(() => {
+        if (!query || !fuse) return [];
+        
+        const searchResults = fuse.search(query);
+        return searchResults.map(result => result.item).slice(0, 50); // LIMIT to 50 results for speed
+      }, [query, fuse]);
+
+      if (loading) {
+        return (
+          <div className="min-h-screen bg-[#001E2B] text-white p-10 font-sans flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00ED64] mx-auto mb-4"></div>
+              <p>Loading library archive...</p>
+            </div>
+          </div>
+        );
+      }
+
+      if (error) {
+        return (
+          <div className="min-h-screen bg-[#001E2B] text-white p-10 font-sans flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-red-500 text-5xl mb-4">⚠️</div>
+              <h2 className="text-xl font-bold mb-2">System Error</h2>
+              <p className="text-gray-400 mb-4">Failed to access library database</p>
+              <p className="text-red-400 text-sm">{error}</p>
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className="min-h-screen bg-[#001E2B] text-white p-4 md:p-10 font-sans">
+          {/* HEADER / SEARCH BAR */}
+          <div className="max-w-3xl mx-auto">
+            <h1 className="text-3xl font-bold mb-2 tracking-tighter">
+              <span className="text-[#00ED64]">///</span> LIBRARY_ARCHIVE
+            </h1>
+            <p className="text-gray-400 mb-8 text-sm">Accessing 18,000 records...</p>
+            <p className="text-gray-500 text-xs mb-6">Powered by TahirDevs Speed-Search™</p>
+
+            <div className="relative group">
+              <input
+                type="text"
+                placeholder="Search by Title, Author, Subject or Type..."
+                className="w-full bg-[#0b2a3a] border border-[#00ED64]/30 text-white p-4 rounded-none focus:outline-none focus:border-[#00ED64] focus:shadow-[0_0_15px_rgba(0,237,100,0.3)] transition-all placeholder-gray-500"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+              {/* Cyberpunk Decorator */}
+              <div className="cyber-decorator"></div>
+            </div>
+          </div>
+
+          {/* RESULTS GRID */}
+          <div className="max-w-3xl mx-auto mt-10">
+            {results.length > 0 ? (
+              <div className="grid gap-4">
+                {results.map((book) => (
+                  <div 
+                    key={book.id} 
+                    className="book-card flex flex-col md:flex-row justify-between items-start md:items-center p-4 border-l-4 border-[#00ED64] bg-[#001E2B] hover:bg-[#0b2a3a] transition-all duration-300 shadow-lg group"
+                  >
+                    <div className="flex-1 mb-3 md:mb-0">
+                      <h3 className="font-bold text-lg text-white group-hover:text-[#00ED64] transition-colors">
+                        {book.title || 'Untitled'}
+                      </h3>
+                      <p className="text-sm text-gray-400 mt-1">
+                        {book.author ? `Authored by ${book.author}` : 'Author unknown'}
+                      </p>
+                      {(book.subject || book.type) && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {book.subject && (
+                            <span className="text-xs font-mono text-[#00ED64] border border-[#00ED64] px-2 py-1">
+                              {book.subject.toUpperCase()}
+                            </span>
+                          )}
+                          {book.type && (
+                            <span className="text-xs font-mono text-blue-400 border border-blue-400 px-2 py-1">
+                              {book.type.toUpperCase()}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-xs font-mono text-gray-500 border border-gray-500 px-2 py-1">
+                      ID: {book.id}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : query ? (
+              <div className="text-center text-gray-500 mt-20">
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="text-xl font-bold mb-2">No Records Found</h3>
+                <p className="mb-4">Your search for "{query}" did not match any records</p>
+                <p className="text-sm">Try adjusting your search terms or check for typos</p>
+                <p className="text-xs mt-4 text-gray-600">The system uses fuzzy search to handle misspellings</p>
+              </div>
+            ) : (
+              <div className="text-center text-gray-500 mt-20">
+                <div className="text-6xl mb-4">📚</div>
+                <h3 className="text-xl font-bold mb-2">Library Archive Ready</h3>
+                <p>Enter a search term to begin exploring 18,000+ books</p>
+                <p className="text-sm mt-4">Powered by Fuse.js typo-tolerant search technology</p>
+              </div>
+            )}
+          </div>
+
+          {/* FOOTER */}
+          <div className="max-w-3xl mx-auto mt-16 pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">
+            <p>LIBRARY_ARCHIVE v2.0 • Powered by Fuse.js Search Technology</p>
+            <p className="mt-2">© 2023 TahirDevs • Advanced Book Discovery System</p>
+            <p className="mt-1 text-xs">In collaboration with RTEETECH and Awisee.com</p>
+          </div>
+        </div>
+      );
+    };
+
+    // Render the app
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<BookSearch />);
+  </script>
+</body>
+</html>
